@@ -1,24 +1,18 @@
 #include<iostream>
 #include<cstring>
-#include<queue>
-#include<vector>
 #define MAX 1000
 using namespace std;
-void comp();
+void dfs(int,int,int);
 
 int maze[MAX+2][MAX+2];
 int visited[MAX+2][MAX+2] = {0};
 int from[MAX+2][MAX+2];
-// ¤W0 ¥ª1 ¤U2 ¥k3
-vector<pair<int,int>> road;
+int dir[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+int Rd, Cd;
 
 int main() {
-	int dir[4][2] = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
-	queue<pair<int,int> > q;
-	memset(maze, 111, sizeof(maze));
-	cout << maze[0][0];
-	int R, C, N, i, j, Rs, Cs, Rd, Cd, r, c, lv, xx, yy;
-	int ans = 2147483647, mx;
+	memset(maze, -1, sizeof(maze));
+	int R, C, N, i, j, Rs, Cs, r, c, lv, xx, yy, x, y;
 	scanf("%d%d", &R, &C);
 	scanf("%d%d%d%d", &Rs, &Cs, &Rd, &Cd);
 	scanf("%d", &N);
@@ -26,20 +20,24 @@ int main() {
 		scanf("%d%d%d", &r, &c, &lv);
 		maze[r+1][c+1] = lv;
 	}
-	q.push({Rs, Cs});
-	while (!q.empty()) {
-		xx = q.front().first;
-		yy = q.front().second;
-		for (i = 0;i < 4;i++) {
-			if (maze[xx+dir[i][0]][yy+dir[i][i]] != -1) {
-				road.push_back({xx+dir[i][0], yy+dir[i][i]});
-			}
-		}
-		comp();
-	}
+	maze[Rs+1][Cs+1] = 0;
+	maze[Rd+1][Cd+1] = 2147483647;
+	dfs(Rs+1, Cs+1, 0);
+	cout << maze[Rd+1][Cd+1];
 	return 0;
 }
 
-void comp() {
-	
+void dfs(int r, int c, int mxlv) {
+	if (r == Rd+1 && c == Cd+1) {
+		maze[r][c] = min(maze[r][c], mxlv);
+		return;
+	}
+	if (maze[r][c] == -1 || visited[r][c]) return;
+	if (mxlv >= maze[Rd+1][Cd+1]) return;
+	mxlv = max(mxlv, maze[r][c]);
+	visited[r][c] = 1;
+	for (int i = 0;i < 4;i++) {
+		dfs(r+dir[i][0], c+dir[i][1], mxlv);
+	}
+	visited[r][c] = 0;
 }
